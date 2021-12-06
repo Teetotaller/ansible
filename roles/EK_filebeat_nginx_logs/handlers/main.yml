@@ -1,0 +1,17 @@
+---
+# handlers file for EK_filebeat_nginx_logs
+- name: Restart filebeat
+  service:
+    name: filebeat
+    state: restarted
+
+- name: Restart elasticsearch
+  service:
+    name: elasticsearch
+    state: restarted
+
+- name: Restart kibana
+  service:
+    name: kibana
+    state: restarted
+

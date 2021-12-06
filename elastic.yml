@@ -1,0 +1,7 @@
+---
+- name: Install and setup Filebeat
+  hosts: nginx
+  become: yes
+
+  roles:
+    - { role: EK_filebeat_nginx_logs, when: ansible_os_family == "RedHat" }

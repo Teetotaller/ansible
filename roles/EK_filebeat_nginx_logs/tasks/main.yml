@@ -1,0 +1,48 @@
+---
+# tasks file for EK_filebeat_nginx_logs
+- name: Import a key from a url
+  ansible.builtin.rpm_key:
+    state: present
+    key: https://packages.elastic.co/GPG-KEY-elasticsearch
+
+- name: Copy repo
+  copy:
+    src: elastic.repo
+    dest: /etc/yum.repos.d/
+
+- name: Install filebeat, elasticsearch, kibana
+  yum:
+    name: ['filebeat','elasticsearch', 'kibana']
+    state: latest
+
+- name: Copy filebeat.yml
+  copy:
+    src: filebeat.yml
+    dest: /etc/filebeat/
+  notify: Restart filebeat
+
+- name: filebeat modules enable nginx
+  command: filebeat modules enable nginx
+
+- name: Copy elasticsearch.yml
+  copy:
+    src: elasticsearch.yml
+    dest: /etc/elasticsearch/
+  notify: Restart elasticsearch
+
+- name: Copy kibana.yml
+  copy:
+    src: kibana.yml
+    dest: /etc/kibana/
+  notify: Restart kibana
+
+- name: Start filebeat, elasticsearch, kibana
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  with_items:
+    - filebeat
+    - elasticsearch
+    - kibana
+
